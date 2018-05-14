@@ -1,2 +1,244 @@
 
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name="theme-color" content="#000000"><link rel="manifest" href="/manifest.json"><link rel="shortcut icon" href="/favicon.ico"><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet"><script async src="https://www.googletagmanager.com/gtag/js?id=UA-117583592-1"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-117583592-1")</script><style>body,html{height:100%!important;margin:0;padding:0;width:100%;background:linear-gradient(to right,#6d37e2 0,#dc55e2 100%);-webkit-font-smoothing:antialiased}.reactcx{height:100%!important}</style><title>TriviaCrowd</title><link href="/static/css/main.b6b2a0a8.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div class="reactcx" id="root"></div><script type="text/javascript" src="/static/js/main.c62d7f3c.js"></script></body></html>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>HQtie</title>
+    <link href="main.css" rel="stylesheet">
+</head>
+<body>
+    <div id="hqtie">
+    </div>
+    <div id="container" class="container">
+        <div class="left-status"><img src="logo.png" id="logo" height="150px" width="150px"></div>
+        <div class="content">
+            <br>
+            <br>
+            <form>
+                <div id="fields">
+                    <input id="phone" class="field" type="text" placeholder="Phone Number...">
+                </div>
+                <p class="rem" id="format">Format Example: +11234567890</p>
+                <div id="phone-sign-in-recaptcha" class="phone-sign-in-recaptcha"></div>
+                <br>
+                <div id="buttonthing" style="text-align: center;">
+                    <button id="sign-in" class="but">Sign In</button>
+                </div>
+            </form>
+            <p class="rem" id="error"></p>
+            <br>
+            <h4 class="notice">Note: Free accounts will only go up to Q6. To continue past Q6, please purchase this bot.</h4>
+            <h4 class="notice">To purchase: The price is $35 lifetime, please message Oli#9999 on Discord if interested.</h4>
+			      <h6 class="important">If you have any legal issues with this website, please contact oli@overrateddev.co</h6>
+            <br>
+            <input type="image" class="discord" id="discordjoin" src="discord.png">
+        </div>
+    </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        var config = {
+            apiKey: "AIzaSyDA39y_QpUZnhYQDgWfDc8M5nCKGjy6GCc",
+            authDomain: "yioj4y90904g4jimopgk.firebaseapp.com",
+            databaseURL: "https://yioj4y90904g4jimopgk.firebaseio.com/",
+            projectId: "yioj4y90904g4jimopgk",
+            storageBucket: "yioj4y90904g4jimopgk.appspot.com",
+            messagingSenderId: "135879096161"
+        };
+
+        var paid = false;
+
+        firebase.initializeApp(config);
+
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE); // Don't stay signed in ;)
+        firebase.auth().useDeviceLanguage();
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            window.user = user;
+        });
+
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('phone-sign-in-recaptcha', {
+            'size': 'invisible',
+            'callback': function(response) {
+                // I was going to do something here...
+            }
+        });
+
+        recaptchaVerifier.render().then(function(widgetId) {
+            window.recaptchaWidgetId = widgetId;
+        });
+
+        function removeElements() {
+            var con = document.getElementById("container");
+            con.parentNode.removeChild(con);
+        }
+
+        function setupHqtie() {
+            var ref = firebase.database().ref('hqtie/');
+            ref.on('value', function(snapshot) {
+                var newData = snapshot.val()
+                const question = document.getElementById('question'),
+                    answer1 = document.getElementById('answer1'),
+                    answer2 = document.getElementById('answer2'),
+                    answer3 = document.getElementById('answer3'),
+                    answer1Mentions = document.getElementById('answer1Mentions'),
+                    answer2Mentions = document.getElementById('answer2Mentions'),
+                    answer3Mentions = document.getElementById('answer3Mentions');
+
+                if (newData.id >= 7) {
+                  if (!paid) {
+                    question.innerHTML = "Question Limit Reached"
+                    answer1.innerHTML = "To continue past Q6;"
+                    answer2.innerHTML = "Please purchase HQtie for $35"
+                    answer3.innerHTML = "Message Oli#9999 if interested."
+                    answer1Mentions.innerHTML = 0;
+                    answer2Mentions.innerHTML = 0;
+                    answer3Mentions.innerHTML = 0;
+                  } else {
+                    question.innerHTML = newData.question
+                    answer1.innerHTML = newData.answer1
+                    answer2.innerHTML = newData.answer2
+                    answer3.innerHTML = newData.answer3
+                    answer1Mentions.innerHTML = newData.answer1Mentions
+                    answer2Mentions.innerHTML = newData.answer2Mentions
+                    answer3Mentions.innerHTML = newData.answer3Mentions
+
+                    answer1B = document.getElementById("answer1B")
+                    answer2B = document.getElementById("answer2B")
+                    answer3B = document.getElementById("answer3B")
+
+                    answer1B.classList.remove("correct")
+                    answer2B.classList.remove("correct")
+                    answer3B.classList.remove("correct")
+
+                    var correctNumber = newData.correctAnswer
+                    var correctAnswer = document.getElementById("answer" + correctNumber + "B")
+                    if (correctAnswer) {
+                        correctAnswer.classList.add("correct");
+                    }
+				          }
+                  } else {
+                    question.innerHTML = newData.question
+                    answer1.innerHTML = newData.answer1
+                    answer2.innerHTML = newData.answer2
+                    answer3.innerHTML = newData.answer3
+                    answer1Mentions.innerHTML = newData.answer1Mentions
+                    answer2Mentions.innerHTML = newData.answer2Mentions
+                    answer3Mentions.innerHTML = newData.answer3Mentions
+
+                    answer1B = document.getElementById("answer1B")
+                    answer2B = document.getElementById("answer2B")
+                    answer3B = document.getElementById("answer3B")
+
+                    answer1B.classList.remove("correct")
+                    answer2B.classList.remove("correct")
+                    answer3B.classList.remove("correct")
+
+                    var correctNumber = newData.correctAnswer
+                    var correctAnswer = document.getElementById("answer" + correctNumber + "B")
+                    if (correctAnswer) {
+                        correctAnswer.classList.add("correct");
+                    }
+                }
+            });
+        }
+
+        document.querySelector('#discordjoin').addEventListener('click', function(e) {
+          window.location.href = "https://discord.gg/AFc6duK";
+        });
+
+        document.querySelector('#sign-in').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var phone = document.querySelector('#phone').value;
+            var auth = firebase.auth();
+            var appVerifier = window.recaptchaVerifier;
+
+            if (phone == "") {
+                document.getElementById("error").innerHTML = "Phone number not specified!";
+                return;
+            }
+
+            firebase.auth().signInWithPhoneNumber(phone, appVerifier).then(function(confirmation) {
+                window.confirmationResult = confirmation;
+                document.getElementById("error").innerHTML = ""; // Reset Error Text
+                document.getElementById("format").innerHTML = ""; // Remove Format Text
+                document.getElementById("buttonthing").innerHTML = `<button id="submitcode" class="but">Submit Code</button>`;
+                document.getElementById("fields").innerHTML = `<input id="code" class="field" type="text" placeholder="Code...">`;
+
+                document.querySelector('#submitcode').addEventListener('click', function(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  var code = document.querySelector("#code").value;
+                  checkCode(confirmation, code);
+                });
+            }).catch(function(error) {
+                window.recaptchaVerifier.render().then(function(widgetId) {
+                    grecaptcha.reset(widgetId);
+                });
+
+                document.getElementById("error").innerHTML = error;
+            });
+        });
+
+        function checkCode(confirmation, code) {
+            confirmation.confirm(code).then(function(result) {
+                var u = result.user;
+                if (u != null) {
+                    const db = firebase.firestore();
+                    const usersRef = db.collection("users").doc(u.uid);
+
+                    usersRef.get().then((docSnapshot) => {
+                      if (docSnapshot.exists) {
+                        usersRef.onSnapshot((doc) => {
+                          var data = doc.data();
+
+                          if (data.paid) {
+                            paid = true;
+                          }
+                        });
+                      } else {
+                        usersRef.set({ paid: false })
+                      }
+                    })
+
+                    removeElements();
+
+                    var div = document.createElement("div");
+                    div.innerHTML =
+                        '<div id="container" class="container">' +
+                        ' \n<div class="left-status"><img src="logo.png" height="150px" width="150px"></div>' +
+                        ' \n<div class="content">' +
+                        ' \n    <br>' +
+                        ' \n    <h2 class="question" id="question">-- Reconnecting --</h2>' +
+                        ' \n    <br>' +
+                        ' \n    <div class="answer" id="answer1B">' +
+                        ' \n        <p class="answer_text"><span id="answer1"></span><span class="answer_count" id="answer1Mentions"></span></p>' +
+                        ' \n    </div>' +
+                        ' \n    <div class="answer" id="answer2B">' +
+                        ' \n        <p class="answer_text"><span id="answer2"></span><span class="answer_count" id="answer2Mentions"></span></p>' +
+                        ' \n    </div>' +
+                        ' \n    <div class="answer" id="answer3B">' +
+                        ' \n        <p class="answer_text"><span id="answer3"></span><span class="answer_count" id="answer3Mentions"></span></p>' +
+                        ' \n    </div>' +
+                        ' \n     <br>' +
+                        ' \n    <h4 class="reminder">Reminder<h4>' +
+                        ' \n    <p class="rem">If all answer scores are 0, this is a "no-answer" question (basically very anti-bot). If this happens, the answer will always default to 1.'+
+                        ` \n    <input type="image" class="discord" id="discordjoin" src="discord.png">` +
+                        ' \n</div>' +
+                        ' \n</div>';
+                    document.body.appendChild(div);
+                    setupHqtie();
+                }
+            }).catch(function(error) {
+                if (error === "Error: The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code sms and be sure use the verification code provided by the user.") {
+                    document.getElementById("error").innerHTML = "Invalid code!";
+                } else {
+                    document.getElementById("error").innerHTML = error;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
